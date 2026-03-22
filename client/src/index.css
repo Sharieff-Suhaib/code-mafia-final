@@ -1,0 +1,185 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Inline:opsz,wght@10..72,100..900&display=swap');
+body {
+  margin: 0;
+  padding: 0;
+  /* font-family: 'Press Start 2P', cursive; */
+  font-family: "Big Shoulders Inline", sans-serif;
+  background-color: #0f1525;
+  color: #FFD400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::-webkit-scrollbar {
+  display: none; /*disable scrollbar*/
+}
+
+code {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* Editor Page Styles */
+
+/* power ups */
+.flip {
+  transform:rotate(180deg);
+  -ms-transform:rotate(180deg);
+  -webkit-transform:rotate(180deg);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.5); /* Semi-transparent */
+  z-index: 9999;
+}
+
+.popup{
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top:0;
+  left:0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.popup-box{
+  position: relative;
+  height: 400px;
+  width: 600px;
+  background-color: white;
+  color:red;
+}
+
+.popup-box button{
+  position: absolute;
+  top:4px;
+  right: 4px;
+}
+
+.foggy {
+  position: relative;
+  backdrop-filter: blur(100px);
+  filter: blur(2px);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+
+/* power ups */
+.flip {
+  transform:rotate(180deg);
+  -ms-transform:rotate(180deg);
+  -webkit-transform:rotate(180deg);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.5); /* Semi-transparent */
+  z-index: 9999;
+}
+
+.popup{
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top:0;
+  left:0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.popup-box{
+  position: relative;
+  height: 400px;
+  width: 600px;
+  background-color: white;
+  color:red;
+}
+
+.popup-box button{
+  position: absolute;
+  top:4px;
+  right: 4px;
+}
+
+.foggy {
+  position: relative;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  filter: blur(2px);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+/* Glitch container effect */
+body.glitching {
+  animation: glitchBackground 0.3s infinite alternate;
+  filter: hue-rotate(20deg) contrast(1.5);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Screen flicker effect (white flash) */
+body.glitching::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  opacity: 0.05;
+  animation: flicker 0.15s infinite;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* Flicker animation */
+@keyframes flicker {
+  0%   { opacity: 0.02; }
+  50%  { opacity: 0.12; }
+  100% { opacity: 0.04; }
+}
+
+/* Zip Bomb effect */
+.zip-popup {
+  position: fixed;
+  width: 200px;
+  padding: 10px;
+  background: white;
+  color: black;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+  z-index: 9999;
+  font-family: monospace;
+  font-size: 14px;
+  user-select: none;
+  cursor: move;
+}
+
+.zip-popup-header {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.zip-popup-close {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  color: red;
+}

@@ -1,0 +1,424 @@
+.admin-utils-container {
+    min-height: 100vh;
+    background-color: #0f1525;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ffd400;
+    font-family: "Press Start 2P", cursive;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  
+  .admin-utils-title {
+    font-size: 2rem;
+    text-shadow: 4px 4px 0px #000;
+    margin-bottom: 30px;
+  }
+  
+  .admin-utils-button {
+    background-color: #ffd400;
+    color: #0f1525;
+    border: 2px solid #000;
+    padding: 15px 30px;
+    font-size: 1rem;
+    font-family: "Press Start 2P", cursive;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px #000;
+    transition: all 0.2s ease;
+    margin-bottom: 20px;
+  }
+  
+  .admin-utils-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0px #000;
+  }
+  
+  .admin-utils-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    box-shadow: 4px 4px 0px #000;
+  }
+  
+  .admin-utils-message {
+    font-size: 1rem;
+    color: #FF6B6B;
+    text-shadow: 2px 2px 0px #000;
+    margin-top: 15px;
+  }
+  
+  /* CRT Scanline Effect */
+  .scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.05) 2px,
+      rgba(255, 255, 255, 0.05) 4px
+    );
+    pointer-events: none;
+  }
+
+  /* New Admin Panel Styles */
+  .admin-section {
+    background: rgba(255, 212, 0, 0.1);
+    border: 3px solid #ffd400;
+    border-radius: 0;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 8px 8px 0px #000;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .admin-section h2 {
+    color: #ffd400;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    text-shadow: 3px 3px 0px #000;
+  }
+
+  .admin-section h3 {
+    color: #ffd400;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    text-shadow: 2px 2px 0px #000;
+  }
+
+  .admin-section h4 {
+    color: #ffd400;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    text-shadow: 2px 2px 0px #000;
+  }
+
+  .status-info {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  .status-info p {
+    margin: 10px 0;
+    font-size: 0.9rem;
+  }
+
+  .status-badge {
+    padding: 5px 15px;
+    border: 2px solid #000;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 2px 2px 0px #000;
+  }
+
+  .status-badge.start {
+    background: #28a745;
+    color: white;
+  }
+
+  .status-badge.pause {
+    background: #ffc107;
+    color: #000;
+  }
+
+  .status-badge.stop,
+  .status-badge.stopped {
+    background: #dc3545;
+    color: white;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .admin-button {
+    font-family: "Press Start 2P", cursive;
+    font-size: 0.8rem;
+  }
+
+  .admin-button.start {
+    background: #28a745;
+    color: white;
+  }
+
+  .admin-button.pause {
+    background: #ffc107;
+    color: #000;
+  }
+
+  .admin-button.stop {
+    background: #dc3545;
+    color: white;
+  }
+
+  .admin-button.reset {
+    background: #6c757d;
+    color: white;
+  }
+
+  .admin-button.refresh {
+    background: #007bff;
+    color: white;
+  }
+
+  .admin-button.upload {
+    background: #17a2b8;
+    color: white;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .admin-button.add-test {
+    background: #6f42c1;
+    color: white;
+    margin-top: 10px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ffd400;
+    font-size: 0.8rem;
+    text-shadow: 2px 2px 0px #000;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ffd400;
+    background: #0f1525;
+    color: #ffd400;
+    font-size: 0.9rem;
+    font-family: monospace;
+    box-shadow: 4px 4px 0px #000;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #00d4ff;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .test-cases-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #ffd400;
+  }
+
+  .test-case-form {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border: 2px solid #ffd400;
+    box-shadow: 4px 4px 0px #000;
+    margin-bottom: 20px;
+  }
+
+  .test-cases-list {
+    margin-top: 20px;
+  }
+
+  .test-case-item {
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #ffd400;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 4px 4px 0px #000;
+  }
+
+  .test-case-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .test-case-header strong {
+    color: #ffd400;
+    font-size: 0.9rem;
+  }
+
+  .badge {
+    padding: 3px 10px;
+    border: 2px solid #000;
+    font-size: 0.7rem;
+    box-shadow: 2px 2px 0px #000;
+  }
+
+  .badge.visible {
+    background: #28a745;
+    color: white;
+  }
+
+  .badge.hidden {
+    background: #dc3545;
+    color: white;
+  }
+
+  .remove-btn {
+    background: #dc3545;
+    color: white;
+    border: 2px solid #000;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: "Press Start 2P", cursive;
+    font-size: 0.8rem;
+    box-shadow: 2px 2px 0px #000;
+  }
+
+  .remove-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 0px #000;
+  }
+
+  .test-case-content {
+    text-align: left;
+    font-size: 0.7rem;
+    line-height: 1.6;
+  }
+
+  .test-case-content p {
+    margin: 5px 0;
+    word-break: break-all;
+  }
+
+  .admin-message {
+    padding: 15px;
+    margin-top: 20px;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0px #000;
+    font-size: 0.9rem;
+    text-shadow: 2px 2px 0px #000;
+    max-width: 900px;
+    width: 100%;
+  }
+
+  .admin-message.success {
+    background: #28a745;
+    color: white;
+  }
+
+  .admin-message.error {
+    background: #dc3545;
+    color: white;
+  }
+
+  /* Teams Table Styles */
+  .teams-table-container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+  }
+
+  .teams-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #ffd400;
+    box-shadow: 4px 4px 0px #000;
+  }
+
+  .teams-table thead {
+    background: rgba(255, 212, 0, 0.2);
+  }
+
+  .teams-table th {
+    padding: 12px;
+    text-align: left;
+    color: #ffd400;
+    font-size: 0.8rem;
+    border-bottom: 2px solid #ffd400;
+    text-shadow: 2px 2px 0px #000;
+  }
+
+  .teams-table td {
+    padding: 10px 12px;
+    color: #fff;
+    font-size: 0.75rem;
+    border-bottom: 1px solid rgba(255, 212, 0, 0.3);
+    font-family: monospace;
+  }
+
+  .teams-table tbody tr:hover {
+    background: rgba(255, 212, 0, 0.1);
+  }
+
+  .teams-table .team-name {
+    color: #ffd400;
+    font-weight: bold;
+  }
+
+  .teams-table .points {
+    color: #28a745;
+    font-weight: bold;
+  }
+
+  .teams-table .coins {
+    color: #ffc107;
+    font-weight: bold;
+  }
+
+  .teams-table .date {
+    color: #aaa;
+    font-size: 0.7rem;
+  }
+
+  .no-data {
+    color: #aaa;
+    font-size: 0.9rem;
+    padding: 20px;
+    text-align: center;
+  }
+
+  /* Difficulty badges */
+  .difficulty-badge {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+  }
+
+  .difficulty-badge.easy {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  .difficulty-badge.medium {
+    background-color: #FF9800;
+    color: white;
+  }
+
+  .difficulty-badge.hard {
+    background-color: #F44336;
+    color: white;
+  }
+
+  .challenge-id {
+    font-family: monospace;
+    color: #61dafb;
+    font-size: 0.8rem;
+  }

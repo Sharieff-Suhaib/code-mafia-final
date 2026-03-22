@@ -1,0 +1,354 @@
+/* Background overlay */
+.powerups-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Dialog Box */
+.powerups-dialog {
+  background: rgba(20, 20, 20, 0.95);
+  padding: 20px;
+  width: 60vw;
+  max-height: 90vh;
+  /* Added */
+  overflow: hidden;
+  /* Added */
+  border-radius: 10px;
+  box-shadow: 0 0 20px #ff4500, 0 0 40px #ff0000;
+  text-align: center;
+  color: white;
+  animation: popIn 0.3s ease-out;
+  display: flex;
+  /* Added */
+  flex-direction: column;
+  /* Added */
+}
+
+/* Heading */
+.powerups-dialog h2 {
+  color: #FFD400;
+}
+
+/* Powerups & Teams Container */
+.powerups-container {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+/* Power-ups Section (Grid Layout) */
+.powerups-column {
+  width: 60%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Individual Power-up Button */
+.power-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Power-up Icon */
+.power-icon {
+  width: 4vw;
+  height: 4vw;
+  margin-bottom: 2vh;
+  filter: drop-shadow(0 0 0 white) drop-shadow(0 0 5px white);
+}
+
+/* Power-up Name */
+.power-button span {
+  color: #FFD400;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Hover Effect */
+.power-button:hover {
+  transform: scale(1.1);
+}
+
+/* Selected Power-up */
+.selected {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 10px #ffcc00);
+}
+
+.power-button.selected .power-name {
+  color: #00ffea;
+}
+
+.power-button.selected .cost-badge {
+  background: #00ffea;
+}
+
+/* Icon container for relative positioning */
+.icon-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Cost badge */
+.cost-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #FFD400;
+  border-radius: 999px;
+  padding: 2px 5px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.cost-badge span {
+  color: black;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+/* Currency icon inside badge */
+.currency-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Teams Column */
+/* Teams Column */
+.teams-column {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  /* Add scroll on vertical overflow */
+  max-height: 400px;
+  /* restricts how tall the team list can grow */
+  padding-right: 5px;
+  /* optional: avoid scrollbar overlap */
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+}
+
+.teams-column::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+/* Team Selection Buttons */
+.team-button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: 'Press Start 2P', cursive;
+  color: #FFD400;
+  background-color: transparent;
+  transition: background 0.2s;
+}
+
+.team-button.selected {
+  background: #FFD400;
+  color: #0f1525;
+  font-weight: bold;
+  box-shadow: 0 0 10px #FFD400;
+}
+
+/* Hover Effect */
+.team-button:hover {
+  background: #ffd400;
+  color: #0f1525;
+}
+
+/* Close Button */
+.close-button {
+  margin-top: 10px;
+  padding: 8px 15px;
+  border: none;
+  background: #ff4500;
+  color: white;
+  font-size: 16px;
+  font-family: 'Press Start 2P', cursive;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.close-button:hover {
+  background: #ff0000;
+}
+
+.execute-button {
+  background-color: #FFD400;
+  border: none;
+  color: #0f1525;
+  padding: 8px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  font-family: 'Press Start 2P', cursive;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.execute-button:hover {
+  background-color: #246e28;
+  color: white;
+  animation: greenFire 0.5s infinite alternate, vibrate 0.1s infinite;
+}
+
+/* Green fire effect */
+@keyframes greenFire {
+  0% {
+    box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+  }
+
+  100% {
+    box-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00, 0 0 60px #00ff00;
+  }
+}
+
+/* Vibrating effect */
+@keyframes vibrate {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-1px, 1px);
+  }
+
+  50% {
+    transform: translate(1px, -1px);
+  }
+
+  75% {
+    transform: translate(-1px, -1px);
+  }
+
+  100% {
+    transform: translate(1px, 1px);
+  }
+}
+
+/* Anime-style popup animation */
+@keyframes popIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ------------------------------ */
+/* RESPONSIVE STYLING */
+/* ------------------------------ */
+
+@media (max-width: 768px) {
+  .powerups-dialog {
+    width: 90vw;
+    padding: 15px;
+  }
+
+  .powerups-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .powerups-column,
+  .teams-column {
+    width: 100%;
+  }
+
+  .powerups-column {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .power-button img {
+    width: 12vw;
+    height: 12vw;
+    margin-bottom: 1vh;
+  }
+
+  .power-button span {
+    font-size: 0.6rem;
+  }
+
+  .team-button {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .close-button,
+  .execute-button {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .powerups-dialog h2 {
+    font-size: 1.2rem;
+  }
+
+  .power-button span {
+    font-size: 0.5rem;
+  }
+
+  .execute-button,
+  .close-button {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+.coin-icon {
+  width: 6vh;
+  height: 6vh;
+  filter: drop-shadow(0 0 4px #FFD400);
+}
+
+.coins-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coin-count {
+  color: #ff5252;
+}
