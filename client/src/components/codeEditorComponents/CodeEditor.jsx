@@ -114,7 +114,11 @@ const isFullSkeleton = (code) => {
 };
 
 const defaultBoilerplate = (langKey, starterCodeByLang) => {
-  const fromDb = starterCodeByLang && starterCodeByLang[langKey];
+  const fromDb =
+    (starterCodeByLang && starterCodeByLang[langKey]) ||
+    (langKey === "cpp" && starterCodeByLang && starterCodeByLang["c++"]) ||
+    (langKey === "javascript" && starterCodeByLang && starterCodeByLang.js) ||
+    (langKey === "python" && starterCodeByLang && starterCodeByLang.py);
   const hasDbCode = typeof fromDb === "string" && fromDb.trim();
 
   if (hasDbCode) {
@@ -242,12 +246,11 @@ const CodeEditor = ({
   const handleLanguageChange = (newLang) => {
     const response = window.confirm("Changing language will reset your code. Continue?");
     if (response) {
+      const refreshedStarter = defaultBoilerplate(newLang, starterCodeByLang);
       localStorage.setItem("lastSelectedLang", newLang);
+      localStorage.setItem(`userCode_${questionId}_${newLang}`, refreshedStarter);
       setLang(newLang);
-
-      // Load saved code for the new language or set to boilerplate
-      const savedCode = localStorage.getItem(`userCode_${questionId}_${newLang}`);
-      setCode(savedCode || defaultBoilerplate(newLang, starterCodeByLang));
+      setCode(refreshedStarter);
     }
   };
 

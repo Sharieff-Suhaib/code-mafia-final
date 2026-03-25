@@ -1,35 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import '../styles/AdminUtils.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "../styles/AdminUtils.css";
+
+const slugifyProblemId = (text = "") =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 const AdminUtils = () => {
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [gameStatus, setGameStatus] = useState('stopped');
+  const [message, setMessage] = useState("");
+  const [gameStatus, setGameStatus] = useState("stopped");
   const [totalTeams, setTotalTeams] = useState(0);
   const [teams, setTeams] = useState([]);
   const [challenges, setChallenges] = useState([]);
 
   // Problem upload form
   const [problemForm, setProblemForm] = useState({
-    id: '',
-    title: '',
-    description: '',
-    difficulty: 'easy',
+    id: "",
+    title: "",
+    description: "",
+    difficulty: "easy",
     points: 10,
-    test_cases: {}
+    starter_code: {
+      python: "",
+      c: "",
+      cpp: "",
+      java: "",
+      javascript: "",
+    },
+    test_cases: {},
   });
 
   // Test case form
   const [testCaseForm, setTestCaseForm] = useState({
-    name: '',
-    input: '',
-    expected_output: '',
-    type: 'visible'
+    name: "",
+    input: "",
+    expected_output: "",
+    type: "visible",
   });
 
   const [testCases, setTestCases] = useState([]);
-  const [newTeamName, setNewTeamName] = useState('');
+  const [newTeamName, setNewTeamName] = useState("");
 
   useEffect(() => {
     fetchGameStatus();
@@ -39,81 +53,81 @@ const AdminUtils = () => {
 
   const fetchGameStatus = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_BASEAPI}/admin/game/status`,
         {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
       setGameStatus(response.data.status);
       setTotalTeams(response.data.totalTeams);
     } catch (error) {
-      console.error('Error fetching game status:', error);
+      console.error("Error fetching game status:", error);
     }
   };
 
   const fetchTeams = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_BASEAPI}/admin/teams`,
         {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
       setTeams(response.data.teams || []);
     } catch (error) {
-      console.error('Error fetching teams:', error);
+      console.error("Error fetching teams:", error);
     }
   };
 
   const fetchChallenges = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_BASEAPI}/admin/problems`,
         {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
       setChallenges(response.data.challenges || []);
     } catch (error) {
-      console.error('Error fetching challenges:', error);
+      console.error("Error fetching challenges:", error);
     }
   };
 
   const handleCreateTeam = async () => {
     if (!newTeamName.trim()) {
-      setMessage('Please enter a team name');
+      setMessage("Please enter a team name");
       return;
     }
 
     setLoading(true);
-    setMessage('');
+    setMessage("");
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_BASEAPI}/admin/teams/create`,
         { team_name: newTeamName },
         {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
 
       // Show success message with credentials
-      const msg = response.data.message || 'Team created successfully';
+      const msg = response.data.message || "Team created successfully";
       const credentials = response.data.user_created
         ? `\n\nLogin Credentials:\nUsername: ${response.data.username}\nPassword: ${response.data.password}`
-        : '';
+        : "";
 
       alert(msg + credentials);
       setMessage(msg);
-      setNewTeamName('');
+      setNewTeamName("");
       fetchTeams(); // Refresh the teams list
     } catch (error) {
-      console.error('Error creating team:', error);
-      const errorMsg = error.response?.data?.message || 'Failed to create team';
+      console.error("Error creating team:", error);
+      const errorMsg = error.response?.data?.message || "Failed to create team";
       alert(errorMsg);
       setMessage(errorMsg);
     } finally {
@@ -123,19 +137,19 @@ const AdminUtils = () => {
 
   const handleRefreshQuestionCache = async () => {
     setLoading(true);
-    setMessage('');
+    setMessage("");
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_BASEAPI}/admin/problems/refresh-cache`,
         {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
-      setMessage(response.data.message || 'Cache refreshed successfully');
+      setMessage(response.data.message || "Cache refreshed successfully");
     } catch (error) {
-      console.error('Error refreshing cache:', error);
-      setMessage('Failed to refresh cache');
+      console.error("Error refreshing cache:", error);
+      setMessage("Failed to refresh cache");
     } finally {
       setLoading(false);
     }
@@ -143,20 +157,20 @@ const AdminUtils = () => {
 
   const handleGameControl = async (action) => {
     setLoading(true);
-    setMessage('');
+    setMessage("");
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_BASEAPI}/admin/game/control`,
         { action },
         {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
       setMessage(response.data.message || `Game ${action}ed successfully`);
       setGameStatus(action);
     } catch (error) {
-      console.error('Error controlling game:', error);
+      console.error("Error controlling game:", error);
       setMessage(`Failed to ${action} game`);
     } finally {
       setLoading(false);
@@ -164,14 +178,23 @@ const AdminUtils = () => {
   };
 
   const addTestCase = () => {
-    if (!testCaseForm.name || !testCaseForm.input || !testCaseForm.expected_output) {
-      setMessage('Please fill all test case fields');
+    if (
+      !testCaseForm.name ||
+      !testCaseForm.input ||
+      !testCaseForm.expected_output
+    ) {
+      setMessage("Please fill all test case fields");
       return;
     }
 
     setTestCases([...testCases, { ...testCaseForm }]);
-    setTestCaseForm({ name: '', input: '', expected_output: '', type: 'visible' });
-    setMessage('Test case added');
+    setTestCaseForm({
+      name: "",
+      input: "",
+      expected_output: "",
+      type: "visible",
+    });
+    setMessage("Test case added");
   };
 
   const removeTestCase = (index) => {
@@ -179,57 +202,104 @@ const AdminUtils = () => {
   };
 
   const handleUploadProblem = async () => {
-    if (!problemForm.id || !problemForm.title || !problemForm.description) {
-      setMessage('Please fill all problem fields');
+    if (!problemForm.title || !problemForm.description) {
+      setMessage("Please fill all problem fields");
       return;
     }
 
     if (testCases.length === 0) {
-      setMessage('Please add at least one test case');
+      setMessage("Please add at least one test case");
       return;
     }
 
     setLoading(true);
-    setMessage('');
+    setMessage("");
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
+      const resolvedId =
+        problemForm.id.trim() || slugifyProblemId(problemForm.title);
+      const normalizedStarterCode = {
+        python: problemForm.starter_code?.python || "",
+        c: problemForm.starter_code?.c || "",
+        cpp: problemForm.starter_code?.cpp || "",
+        java: problemForm.starter_code?.java || "",
+        javascript: problemForm.starter_code?.javascript || "",
+      };
 
-      // Convert test cases array to object
-      const testCasesObj = {};
-      testCases.forEach((tc) => {
-        testCasesObj[tc.name] = {
-          input: tc.input,
-          expected_output: tc.expected_output,
-          type: tc.type
-        };
-      });
+      if (!resolvedId) {
+        setMessage("Could not derive problem id from title");
+        setLoading(false);
+        return;
+      }
 
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_BASEAPI}/admin/problems/upload`,
         {
           ...problemForm,
-          test_cases: testCasesObj
+          id: resolvedId,
+          starter_code: normalizedStarterCode,
+          test_cases: testCases,
         },
         {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
 
-      setMessage(response.data.message || 'Problem uploaded successfully');
+      setMessage(response.data.message || "Problem uploaded successfully");
 
       // Reset form
       setProblemForm({
-        id: '',
-        title: '',
-        description: '',
-        difficulty: 'easy',
+        id: "",
+        title: "",
+        description: "",
+        difficulty: "easy",
         points: 10,
-        test_cases: {}
+        starter_code: {
+          python: "",
+          c: "",
+          cpp: "",
+          java: "",
+          javascript: "",
+        },
+        test_cases: {},
       });
       setTestCases([]);
     } catch (error) {
-      console.error('Error uploading problem:', error);
-      setMessage(error.response?.data?.message || 'Failed to upload problem');
+      console.error("Error uploading problem:", error);
+      setMessage(error.response?.data?.message || "Failed to upload problem");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteChallenge = async (challenge) => {
+    if (!challenge?.id) {
+      setMessage("Invalid challenge id");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Delete challenge "${challenge.title}" (${challenge.id})? This cannot be undone.`,
+    );
+    if (!confirmed) return;
+
+    setLoading(true);
+    setMessage("");
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.delete(
+        `${process.env.REACT_APP_SERVER_BASEAPI}/admin/problems/${challenge.id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      setMessage(response.data.message || "Challenge deleted successfully");
+      setChallenges((prev) => prev.filter((c) => c.id !== challenge.id));
+      fetchChallenges();
+    } catch (error) {
+      console.error("Error deleting challenge:", error);
+      setMessage(error.response?.data?.message || "Failed to delete challenge");
     } finally {
       setLoading(false);
     }
@@ -243,34 +313,41 @@ const AdminUtils = () => {
       <div className="admin-section">
         <h2>Game Status</h2>
         <div className="status-info">
-          <p><strong>Current Status:</strong> <span className={`status-badge ${gameStatus}`}>{gameStatus.toUpperCase()}</span></p>
-          <p><strong>Total Teams:</strong> {totalTeams}</p>
+          <p>
+            <strong>Current Status:</strong>{" "}
+            <span className={`status-badge ${gameStatus}`}>
+              {gameStatus.toUpperCase()}
+            </span>
+          </p>
+          <p>
+            <strong>Total Teams:</strong> {totalTeams}
+          </p>
         </div>
         <div className="button-group">
           <button
             className="admin-button start"
-            onClick={() => handleGameControl('start')}
-            disabled={loading || gameStatus === 'start'}
+            onClick={() => handleGameControl("start")}
+            disabled={loading || gameStatus === "start"}
           >
             Start Game
           </button>
           <button
             className="admin-button pause"
-            onClick={() => handleGameControl('pause')}
-            disabled={loading || gameStatus === 'pause'}
+            onClick={() => handleGameControl("pause")}
+            disabled={loading || gameStatus === "pause"}
           >
             Pause Game
           </button>
           <button
             className="admin-button stop"
-            onClick={() => handleGameControl('stop')}
-            disabled={loading || gameStatus === 'stop'}
+            onClick={() => handleGameControl("stop")}
+            disabled={loading || gameStatus === "stop"}
           >
             Stop Game
           </button>
           <button
             className="admin-button reset"
-            onClick={() => handleGameControl('reset')}
+            onClick={() => handleGameControl("reset")}
             disabled={loading}
           >
             Reset Game
@@ -286,7 +363,7 @@ const AdminUtils = () => {
         <div className="create-team-form">
           <h3>Create New Team</h3>
           <div className="form-row">
-            <div className="form-group" style={{flex: 1}}>
+            <div className="form-group" style={{ flex: 1 }}>
               <input
                 type="text"
                 value={newTeamName}
@@ -299,7 +376,7 @@ const AdminUtils = () => {
               className="admin-button add-test"
               onClick={handleCreateTeam}
               disabled={loading || !newTeamName.trim()}
-              style={{marginTop: 0}}
+              style={{ marginTop: 0 }}
             >
               Create Team
             </button>
@@ -328,7 +405,9 @@ const AdminUtils = () => {
                     <td className="points">{team.points || 0}</td>
                     <td className="coins">{team.coins || 0}</td>
                     <td className="date">
-                      {team.created_at ? new Date(team.created_at).toLocaleDateString() : 'N/A'}
+                      {team.created_at
+                        ? new Date(team.created_at).toLocaleDateString()
+                        : "N/A"}
                     </td>
                   </tr>
                 ))}
@@ -363,6 +442,7 @@ const AdminUtils = () => {
                   <th>Points</th>
                   <th>Test Cases</th>
                   <th>Created At</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -372,14 +452,29 @@ const AdminUtils = () => {
                     <td className="challenge-id">{challenge.id}</td>
                     <td className="team-name">{challenge.title}</td>
                     <td>
-                      <span className={`difficulty-badge ${challenge.difficulty}`}>
+                      <span
+                        className={`difficulty-badge ${challenge.difficulty}`}
+                      >
                         {challenge.difficulty}
                       </span>
                     </td>
                     <td className="points">{challenge.points || 0}</td>
-                    <td className="coins">{challenge.test_cases?.length || 0}</td>
+                    <td className="coins">
+                      {challenge.test_cases?.length || 0}
+                    </td>
                     <td className="date">
-                      {challenge.created_at ? new Date(challenge.created_at).toLocaleDateString() : 'N/A'}
+                      {challenge.created_at
+                        ? new Date(challenge.created_at).toLocaleDateString()
+                        : "N/A"}
+                    </td>
+                    <td>
+                      <button
+                        className="admin-button delete"
+                        onClick={() => handleDeleteChallenge(challenge)}
+                        disabled={loading}
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -404,7 +499,7 @@ const AdminUtils = () => {
           onClick={handleRefreshQuestionCache}
           disabled={loading}
         >
-          {loading ? 'Refreshing...' : 'Refresh Question Cache'}
+          {loading ? "Refreshing..." : "Refresh Question Cache"}
         </button>
       </div>
 
@@ -416,16 +511,23 @@ const AdminUtils = () => {
           <input
             type="text"
             value={problemForm.id}
-            onChange={(e) => setProblemForm({ ...problemForm, id: e.target.value })}
+            onChange={(e) =>
+              setProblemForm({ ...problemForm, id: e.target.value })
+            }
             placeholder="e.g., q1, q2, q3"
           />
+          <small>
+            Optional. If left empty, it will be auto-generated from title.
+          </small>
         </div>
         <div className="form-group">
           <label>Title:</label>
           <input
             type="text"
             value={problemForm.title}
-            onChange={(e) => setProblemForm({ ...problemForm, title: e.target.value })}
+            onChange={(e) =>
+              setProblemForm({ ...problemForm, title: e.target.value })
+            }
             placeholder="Problem title"
           />
         </div>
@@ -433,7 +535,9 @@ const AdminUtils = () => {
           <label>Description:</label>
           <textarea
             value={problemForm.description}
-            onChange={(e) => setProblemForm({ ...problemForm, description: e.target.value })}
+            onChange={(e) =>
+              setProblemForm({ ...problemForm, description: e.target.value })
+            }
             placeholder="Problem description (supports markdown)"
             rows="6"
           />
@@ -443,7 +547,9 @@ const AdminUtils = () => {
             <label>Difficulty:</label>
             <select
               value={problemForm.difficulty}
-              onChange={(e) => setProblemForm({ ...problemForm, difficulty: e.target.value })}
+              onChange={(e) =>
+                setProblemForm({ ...problemForm, difficulty: e.target.value })
+              }
             >
               <option value="easy">Easy</option>
               <option value="medium">Medium</option>
@@ -454,12 +560,106 @@ const AdminUtils = () => {
             <label>Points:</label>
             <select
               value={problemForm.points}
-              onChange={(e) => setProblemForm({ ...problemForm, points: parseInt(e.target.value) })}
+              onChange={(e) =>
+                setProblemForm({
+                  ...problemForm,
+                  points: parseInt(e.target.value),
+                })
+              }
             >
               <option value="10">10 (Easy)</option>
               <option value="20">20 (Medium)</option>
               <option value="30">30 (Hard)</option>
             </select>
+          </div>
+        </div>
+
+        <div className="test-cases-section">
+          <h3>Starter Code</h3>
+          <div className="form-group">
+            <label>Python:</label>
+            <textarea
+              value={problemForm.starter_code.python}
+              onChange={(e) =>
+                setProblemForm({
+                  ...problemForm,
+                  starter_code: {
+                    ...problemForm.starter_code,
+                    python: e.target.value,
+                  },
+                })
+              }
+              placeholder="def solve():"
+              rows="4"
+            />
+          </div>
+          <div className="form-group">
+            <label>C:</label>
+            <textarea
+              value={problemForm.starter_code.c}
+              onChange={(e) =>
+                setProblemForm({
+                  ...problemForm,
+                  starter_code: {
+                    ...problemForm.starter_code,
+                    c: e.target.value,
+                  },
+                })
+              }
+              placeholder="#include <stdio.h>"
+              rows="4"
+            />
+          </div>
+          <div className="form-group">
+            <label>C++:</label>
+            <textarea
+              value={problemForm.starter_code.cpp}
+              onChange={(e) =>
+                setProblemForm({
+                  ...problemForm,
+                  starter_code: {
+                    ...problemForm.starter_code,
+                    cpp: e.target.value,
+                  },
+                })
+              }
+              placeholder="#include <bits/stdc++.h>"
+              rows="4"
+            />
+          </div>
+          <div className="form-group">
+            <label>Java:</label>
+            <textarea
+              value={problemForm.starter_code.java}
+              onChange={(e) =>
+                setProblemForm({
+                  ...problemForm,
+                  starter_code: {
+                    ...problemForm.starter_code,
+                    java: e.target.value,
+                  },
+                })
+              }
+              placeholder="public class Main { ... }"
+              rows="4"
+            />
+          </div>
+          <div className="form-group">
+            <label>JavaScript:</label>
+            <textarea
+              value={problemForm.starter_code.javascript}
+              onChange={(e) =>
+                setProblemForm({
+                  ...problemForm,
+                  starter_code: {
+                    ...problemForm.starter_code,
+                    javascript: e.target.value,
+                  },
+                })
+              }
+              placeholder="function solve() { }"
+              rows="4"
+            />
           </div>
         </div>
 
@@ -472,7 +672,9 @@ const AdminUtils = () => {
               <input
                 type="text"
                 value={testCaseForm.name}
-                onChange={(e) => setTestCaseForm({ ...testCaseForm, name: e.target.value })}
+                onChange={(e) =>
+                  setTestCaseForm({ ...testCaseForm, name: e.target.value })
+                }
                 placeholder="e.g., test1, test2"
               />
             </div>
@@ -480,7 +682,9 @@ const AdminUtils = () => {
               <label>Input:</label>
               <textarea
                 value={testCaseForm.input}
-                onChange={(e) => setTestCaseForm({ ...testCaseForm, input: e.target.value })}
+                onChange={(e) =>
+                  setTestCaseForm({ ...testCaseForm, input: e.target.value })
+                }
                 placeholder="Test case input"
                 rows="3"
               />
@@ -489,7 +693,12 @@ const AdminUtils = () => {
               <label>Expected Output:</label>
               <textarea
                 value={testCaseForm.expected_output}
-                onChange={(e) => setTestCaseForm({ ...testCaseForm, expected_output: e.target.value })}
+                onChange={(e) =>
+                  setTestCaseForm({
+                    ...testCaseForm,
+                    expected_output: e.target.value,
+                  })
+                }
                 placeholder="Expected output"
                 rows="3"
               />
@@ -498,7 +707,9 @@ const AdminUtils = () => {
               <label>Type:</label>
               <select
                 value={testCaseForm.type}
-                onChange={(e) => setTestCaseForm({ ...testCaseForm, type: e.target.value })}
+                onChange={(e) =>
+                  setTestCaseForm({ ...testCaseForm, type: e.target.value })
+                }
               >
                 <option value="visible">Visible</option>
                 <option value="hidden">Hidden</option>
@@ -526,8 +737,15 @@ const AdminUtils = () => {
                     </button>
                   </div>
                   <div className="test-case-content">
-                    <p><strong>Input:</strong> {tc.input.substring(0, 50)}{tc.input.length > 50 ? '...' : ''}</p>
-                    <p><strong>Output:</strong> {tc.expected_output.substring(0, 50)}{tc.expected_output.length > 50 ? '...' : ''}</p>
+                    <p>
+                      <strong>Input:</strong> {tc.input.substring(0, 50)}
+                      {tc.input.length > 50 ? "..." : ""}
+                    </p>
+                    <p>
+                      <strong>Output:</strong>{" "}
+                      {tc.expected_output.substring(0, 50)}
+                      {tc.expected_output.length > 50 ? "..." : ""}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -540,13 +758,15 @@ const AdminUtils = () => {
           onClick={handleUploadProblem}
           disabled={loading}
         >
-          {loading ? 'Uploading...' : 'Upload Problem'}
+          {loading ? "Uploading..." : "Upload Problem"}
         </button>
       </div>
 
       {/* Message Display */}
       {message && (
-        <div className={`admin-message ${message.includes('Failed') || message.includes('error') ? 'error' : 'success'}`}>
+        <div
+          className={`admin-message ${message.includes("Failed") || message.includes("error") ? "error" : "success"}`}
+        >
           {message}
         </div>
       )}

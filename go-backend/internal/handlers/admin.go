@@ -137,11 +137,19 @@ func (h *AdminHandler) Signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AdminHandler) RefreshCache(w http.ResponseWriter, r *http.Request) {
+	if err := h.refreshChallengeCaches(); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error fetching challenges")
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, map[string]string{"message": "Challenge cache refreshed successfully"})
+}
+
+func (h *AdminHandler) refreshChallengeCaches() error {
 	// Fetch all challenges from database
 	challenges, err := h.repo.GetAllChallenges()
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Error fetching challenges")
-		return
+		return err
 	}
 
 	// Cache for user (without hidden test cases)
@@ -165,7 +173,7 @@ func (h *AdminHandler) RefreshCache(w http.ResponseWriter, r *http.Request) {
 	judge0CacheData, _ := json.Marshal(challenges)
 	h.redis.Set("challenges-judge0", string(judge0CacheData), 0)
 
-	respondWithJSON(w, http.StatusOK, map[string]string{"message": "Challenge cache refreshed successfully"})
+	return nil
 }
 
 func (h *AdminHandler) UploadProblem(w http.ResponseWriter, r *http.Request) {
@@ -188,7 +196,12 @@ func (h *AdminHandler) UploadProblem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Refresh cache
-	h.RefreshCache(w, r)
+	if err := h.refreshChallengeCaches(); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Problem created, but failed to refresh challenge cache")
+		return
+	}
+
+	respondWithJSON(w, http.StatusCreated, map[string]string{"message": "Problem uploaded successfully"})
 }
 
 func (h *AdminHandler) UploadTestCases(w http.ResponseWriter, r *http.Request) {
@@ -215,6 +228,40 @@ func (h *AdminHandler) UploadTestCases(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]string{"message": "Test cases updated successfully"})
+}
+
+func (h *AdminHandler) DeleteChallenge(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	challengeID := vars["id"]
+	if challengeID == "" {
+		respondWithError(w, http.StatusBadRequest, "Challenge id is required")
+		return
+	}
+
+	challenge, err := h.repo.GetChallengeByID(challengeID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to fetch challenge")
+		return
+	}
+	if challenge == nil {
+		respondWithError(w, http.StatusNotFound, "Challenge not found")
+		return
+	}
+
+	if err := h.repo.DeleteChallengeByID(challengeID); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to delete challenge")
+		return
+	}
+
+	h.redis.Delete("ai-skel-v2:" + challengeID)
+	h.redis.Delete("ai-skel-v2:" + challenge.ID)
+
+	if err := h.refreshChallengeCaches(); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Challenge deleted, but failed to refresh challenge cache")
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, map[string]string{"message": "Challenge deleted successfully"})
 }
 
 func (h *AdminHandler) GetGameStatus(w http.ResponseWriter, r *http.Request) {

@@ -530,6 +530,24 @@ func judge0DecodeB64(s *string) string {
 	return string(b)
 }
 
+func normalizeForCompare(s string) string {
+	normalized := strings.ReplaceAll(strings.ReplaceAll(s, " ", ""), "\n", "")
+	normalized = strings.ReplaceAll(normalized, "\r", "")
+
+	// Handle cases like expected "\"olleh\"" vs actual "olleh".
+	if unquoted, err := strconv.Unquote(normalized); err == nil {
+		normalized = unquoted
+		normalized = strings.ReplaceAll(strings.ReplaceAll(normalized, " ", ""), "\n", "")
+		normalized = strings.ReplaceAll(normalized, "\r", "")
+	}
+
+	lower := strings.ToLower(normalized)
+	if lower == "true" || lower == "false" {
+		return lower
+	}
+	return normalized
+}
+
 func (h *EditorHandler) decodeResults(response models.Judge0BatchResponse, testCases []models.TestCase) []models.TestResult {
 	var results []models.TestResult
 	for i, sub := range response.Submissions {
@@ -545,12 +563,13 @@ func (h *EditorHandler) decodeResults(response models.Judge0BatchResponse, testC
 
 		isHidden := tc.Type == "hidden"
 		expOut := tc.ExpectedOutput
-		
-		// Lenient Output Evaluation (removes spaces, newlines, and case sensitivity differences where applicable)
-		cleanActual := strings.ReplaceAll(strings.ReplaceAll(output, " ", ""), "\n", "")
-		cleanActual = strings.ReplaceAll(cleanActual, "\r", "")
-		cleanExpected := strings.ReplaceAll(strings.ReplaceAll(expOut, " ", ""), "\n", "")
-		cleanExpected = strings.ReplaceAll(cleanExpected, "\r", "")
+
+		// Lenient Output Evaluation:
+		// - ignores whitespace/newline differences
+		// - normalizes quoted strings
+		// - compares booleans case-insensitively (True/False vs true/false)
+		cleanActual := normalizeForCompare(output)
+		cleanExpected := normalizeForCompare(expOut)
 
 		isCorrect := (cleanActual == cleanExpected) && (sub.Status.ID == 3 || sub.Status.ID == 4)
 		
@@ -643,7 +662,11 @@ func (h *EditorHandler) storeSubmission(teamID string, challengeID, sourceCode s
 			newCoins += coins
 		}
 
-		return h.repo.UpdateTeamPointsAndCoins(teamID, newPoints, newCoins)
+		if err := h.repo.UpdateTeamPointsAndCoins(teamID, newPoints, newCoins); err != nil {
+			return err
+		}
+		h.refreshLeaderboardCache()
+		return nil
 	} else if pointsAwarded >= existing.PointsAwarded {
 		// Update existing submission
 		scoreDiff := pointsAwarded - existing.PointsAwarded
@@ -664,8 +687,24 @@ func (h *EditorHandler) storeSubmission(teamID string, challengeID, sourceCode s
 			newCoins += coins
 		}
 
-		return h.repo.UpdateTeamPointsAndCoins(teamID, newPoints, newCoins)
+		if err := h.repo.UpdateTeamPointsAndCoins(teamID, newPoints, newCoins); err != nil {
+			return err
+		}
+		h.refreshLeaderboardCache()
+		return nil
 	}
 
 	return nil
+}
+
+func (h *EditorHandler) refreshLeaderboardCache() {
+	teams, err := h.repo.GetAllTeams()
+	if err != nil {
+		return
+	}
+	data, err := json.Marshal(teams)
+	if err != nil {
+		return
+	}
+	_ = h.redis.SetLeaderboard(string(data))
 }

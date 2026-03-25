@@ -48,9 +48,16 @@ class WebSocketClient {
     };
 
     this.ws.onmessage = (event) => {
+      let data;
       try {
-        const data = JSON.parse(event.data);
-        const { type, payload } = data;
+        data = JSON.parse(event.data);
+      } catch (err) {
+        console.error("WebSocket message parse error:", err);
+        return;
+      }
+
+      const { type, payload } = data;
+      try {
         if (type && this.listeners[type]) {
           this.listeners[type].forEach((cb) => cb(payload));
         }
@@ -58,7 +65,7 @@ class WebSocketClient {
           this.listeners["*"].forEach((cb) => cb(type, payload));
         }
       } catch (err) {
-        console.error("WebSocket message parse error:", err);
+        console.error("WebSocket listener error:", err);
       }
     };
 

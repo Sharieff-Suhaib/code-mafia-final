@@ -183,6 +183,15 @@
     margin-top: 10px;
   }
 
+  .admin-button.delete {
+    background: #dc3545;
+    color: white;
+    width: auto;
+    margin-top: 0;
+    padding: 8px 12px;
+    font-size: 0.7rem;
+  }
+
   .form-group {
     margin-bottom: 20px;
     text-align: left;

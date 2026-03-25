@@ -34,13 +34,13 @@ type groqMessage struct {
 }
 
 type groqRequest struct {
-	Messages           []groqMessage `json:"messages"`
-	Model              string        `json:"model"`
-	Temperature        float64       `json:"temperature"`
-	MaxCompletionTokens int          `json:"max_completion_tokens"`
-	TopP               float64       `json:"top_p"`
-	Stream             bool          `json:"stream"`
-	Stop               interface{}   `json:"stop"`
+	Messages            []groqMessage `json:"messages"`
+	Model               string        `json:"model"`
+	Temperature         float64       `json:"temperature"`
+	MaxCompletionTokens int           `json:"max_completion_tokens"`
+	TopP                float64       `json:"top_p"`
+	Stream              bool          `json:"stream"`
+	Stop                interface{}   `json:"stop"`
 }
 
 type groqChoice struct {
@@ -293,21 +293,22 @@ func (h *AIHandler) callGroq(prompt string) (map[string]string, error) {
 		return nil, fmt.Errorf("groq returned invalid JSON: %w\nContent: %s", err, content)
 	}
 
-	// Normalize keys (model might use "c++" instead of "cpp" etc.)
-	normalized := make(map[string]string)
-	keyMap := map[string]string{
-		"c++": "cpp", "c_plus_plus": "cpp",
-		"js": "javascript", "node": "javascript",
-		"py": "python",
-	}
-	for k, v := range starterCode {
-		lower := strings.ToLower(k)
-		if mapped, ok := keyMap[lower]; ok {
-			normalized[mapped] = v
-		} else {
-			normalized[lower] = v
-		}
-	}
+	return normalizeStarterCodeMap(starterCode), nil
+}
 
-	return normalized, nil
+func normalizeStarterCodeMap(input map[string]string) map[string]string {
+	out := map[string]string{}
+	for k, v := range input {
+		key := strings.ToLower(strings.TrimSpace(k))
+		switch key {
+		case "c++", "c_plus_plus":
+			key = "cpp"
+		case "js", "node":
+			key = "javascript"
+		case "py":
+			key = "python"
+		}
+		out[key] = v
+	}
+	return out
 }

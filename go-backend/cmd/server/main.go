@@ -93,6 +93,7 @@ func main() {
 	adminRouter.HandleFunc("/problems/refresh-cache", adminHandler.RefreshCache).Methods("GET")
 	adminRouter.HandleFunc("/problems/upload", adminHandler.UploadProblem).Methods("POST")
 	adminRouter.HandleFunc("/problems/{id}/testcases", adminHandler.UploadTestCases).Methods("POST")
+	adminRouter.HandleFunc("/problems/{id}", adminHandler.DeleteChallenge).Methods("DELETE")
 	adminRouter.HandleFunc("/problems", adminHandler.GetAllChallenges).Methods("GET")
 	adminRouter.HandleFunc("/game/status", adminHandler.GetGameStatus).Methods("GET")
 	adminRouter.HandleFunc("/game/control", adminHandler.ControlGame).Methods("POST")

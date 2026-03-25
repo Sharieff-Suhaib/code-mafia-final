@@ -383,6 +383,10 @@ function PowerUpController() {
         });
 
         socket.on("apply-active-powerups", (activePowerups) => {
+            if (!Array.isArray(activePowerups) || activePowerups.length === 0) {
+                return;
+            }
+
             activePowerups.forEach(({ powerUp, remainingTime }) => {
                 executePowerUp(powerUp, remainingTime);
 
