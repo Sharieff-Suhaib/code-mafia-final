@@ -78,7 +78,7 @@ func main() {
 	gameRouter.HandleFunc("/getpowers", gameHandler.GetPowers).Methods("GET")
 	gameRouter.Handle("/getcoins", middleware.VerifyToken(cfg.SecretKey, redisClient)(http.HandlerFunc(gameHandler.GetCoins))).Methods("GET")
 	gameRouter.HandleFunc("/status", adminHandler.GetGameStatus).Methods("GET") // Public endpoint for game status
-
+	
 	// Problem routes
 	problemRouter := apiRouter.PathPrefix("/problem").Subrouter()
 	problemRouter.HandleFunc("", problemHandler.GetProblems).Methods("GET")

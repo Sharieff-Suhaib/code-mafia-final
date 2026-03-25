@@ -68,12 +68,20 @@ func (c *Client) handlePowerUpAttack(payload interface{}) {
 
 	if hasShield && attack.PowerUp == "wall-breaker" {
 		c.hub.redis.DeletePowerUp(targetUsername, "shield")
+		// FIX: Send message to target about shield being broken
 		targetClient.sendMessage("shield-down", map[string]string{"message": fmt.Sprintf("%s took down your shield", attack.From)})
+		// FIX: Also send confirmation to attacker
+		c.sendMessage("shield-down", map[string]string{"message": fmt.Sprintf("You broke %s's shield!", targetUsername)})
+		return // Wall-breaker only breaks shield, doesn't apply additional effects
 	} else if attack.PowerUp == "innocency" {
 		if hasShield {
 			c.hub.redis.DeletePowerUp(targetUsername, "shield")
 			c.sendMessage("shield-down", map[string]string{"message": "You dropped your shield"})
-			c.hub.repo.UpdateTeamCoins(teamID, team.Coins-deductCoins+13) // Recovers cost (5) + generates 8 extra profit
+			// FIX: Fetch updated team coins and add the profit correctly
+			updatedTeam, _ := c.hub.repo.GetTeamByID(teamID)
+			if updatedTeam != nil {
+				c.hub.repo.UpdateTeamCoins(teamID, updatedTeam.Coins+8) // 5 spent - 5 + 8 profit = net +3
+			}
 		} else {
 			c.sendMessage("blocked-by-shield", map[string]string{"message": "You have no active shield to drop!"})
 		}
@@ -139,7 +147,7 @@ func (c *Client) handleSuicideAttack(payload interface{}) {
 		c.sendMessage("coins-error", map[string]string{"message": "Not enough coins"})
 		return
 	}
-	
+
 	c.hub.repo.UpdateTeamCoins(teamID, team.Coins-5)
 
 	targetClient := c.hub.GetClientByID(attack.TargetUserID)
@@ -158,7 +166,8 @@ func (c *Client) handleSuicideAttack(payload interface{}) {
 		c.hub.redis.DeletePowerUp(targetClient.username, "shield")
 		targetClient.sendMessage("shield-down", map[string]string{"message": fmt.Sprintf("%s broke your shield with a suicide bomber!", currentClient.username)})
 	} else {
-		targetClient.sendMessage("receive power-up", map[string]string{"powerUp": "zip-bomb", "from": attack.From})
+		// FIX: Apply "suicide-bomber" effect instead of "zip-bomb" for consistency
+		targetClient.sendMessage("receive power-up", map[string]string{"powerUp": "suicide-bomber", "from": attack.From})
 	}
 
 	// Apply on Source
@@ -166,7 +175,8 @@ func (c *Client) handleSuicideAttack(payload interface{}) {
 		c.hub.redis.DeletePowerUp(currentClient.username, "shield")
 		c.sendMessage("shield-down", map[string]string{"message": "Your shield absorbed your own suicide bomber attack!"})
 	} else {
-		c.sendMessage("receive power-up", map[string]string{"powerUp": "zip-bomb", "from": attack.From})
+		// FIX: Apply "suicide-bomber" effect to self as well
+		c.sendMessage("receive power-up", map[string]string{"powerUp": "suicide-bomber", "from": attack.From})
 	}
 }
 
